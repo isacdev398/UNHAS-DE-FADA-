@@ -1,13 +1,15 @@
 "use client";
 
-import { useActionState, useState, useTransition } from "react";
+import { useActionState, useRef, useState, useTransition } from "react";
 import { Button, Spinner } from "@/components/ui/button";
 import { Field, FormMessage, Input, Select, Textarea } from "@/components/ui/form";
+import { IconPlus } from "@/components/ui/icons";
 import { SubmitButton } from "@/components/ui/submit-button";
 import type { SiteContent } from "@/lib/content";
 import type { ActionResult } from "@/lib/errors";
 import { formatPhone } from "@/lib/format";
-import { discardDraftAction, publishAction, saveDraftAction } from "../actions";
+import { discardDraftAction, publishAction, saveDraftAction, uploadPhotoAction } from "../actions";
+import { optimize } from "../galeria/gallery-forms";
 
 type Photo = { path: string; url: string; alt: string };
 
@@ -90,25 +92,73 @@ export function ContentForm({ content, hasChanges, photos }: { content: SiteCont
   );
 }
 
+/** Escolhe uma foto da galeria ou envia uma nova (que também entra na galeria). */
 function PhotoSelect({ name, label, value, photos }: { name: string; label: string; value: string; photos: Photo[] }) {
   const [current, setCurrent] = useState(value);
-  const selected = photos.find((p) => p.path === current);
+  const [uploaded, setUploaded] = useState<Photo[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [uploading, startUpload] = useTransition();
+  const fileRef = useRef<HTMLInputElement>(null);
+  const all = [...uploaded, ...photos];
+  const selected = all.find((p) => p.path === current);
+
+  function upload(file: File) {
+    setError(null);
+    startUpload(async () => {
+      try {
+        const { blob, width, height } = await optimize(file);
+        const data = new FormData();
+        data.set("file", new File([blob], `foto.${blob.type === "image/webp" ? "webp" : "jpg"}`, { type: blob.type }));
+        data.set("alt", label.replace(/\s*\(opcional\)/i, ""));
+        data.set("serviceId", "");
+        data.set("width", String(width));
+        data.set("height", String(height));
+        const r = await uploadPhotoAction(null, data);
+        if (!r.ok || !r.data) {
+          setError(r.ok ? "Não foi possível enviar a foto." : r.error);
+          return;
+        }
+        const photo = { path: r.data.path, url: r.data.url, alt: "Foto enviada agora" };
+        setUploaded((u) => [photo, ...u]);
+        setCurrent(photo.path);
+      } catch {
+        setError("Não foi possível ler esta foto. Tente outra (JPG ou PNG).");
+      } finally {
+        if (fileRef.current) fileRef.current.value = "";
+      }
+    });
+  }
+
   return (
-    <Field label={label} htmlFor={name} hint={photos.length ? "Escolha entre as fotos da galeria." : "Envie fotos na Galeria para usar aqui."}>
+    <Field label={label} htmlFor={name} error={error ?? undefined} hint="Envie uma foto do celular ou escolha uma da galeria.">
       <div className="flex items-center gap-3">
         {selected && (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={selected.url} alt="" className="size-14 shrink-0 rounded-xl object-cover" />
         )}
-        <Select id={name} name={name} value={current} onChange={(e) => setCurrent(e.target.value)}>
+        <Select id={name} name={name} value={current} onChange={(e) => setCurrent(e.target.value)} className="min-w-0 flex-1">
           <option value="">Sem foto</option>
-          {photos.map((p, i) => (
+          {all.map((p, i) => (
             <option key={p.path} value={p.path}>
               {p.alt || `Foto ${i + 1}`}
             </option>
           ))}
         </Select>
       </div>
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/*"
+        className="sr-only"
+        id={`${name}-upload`}
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) upload(file);
+        }}
+      />
+      <Button variant="soft" size="sm" className="mt-2" disabled={uploading} aria-busy={uploading} onClick={() => fileRef.current?.click()}>
+        {uploading ? <Spinner /> : <IconPlus size={15} />} {uploading ? "Enviando…" : "Enviar foto"}
+      </Button>
     </Field>
   );
 }

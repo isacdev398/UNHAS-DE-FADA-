@@ -8,6 +8,7 @@ import { requireAdmin } from "@/lib/auth";
 import { siteContentSchema } from "@/lib/content";
 import { CATALOG_TAG } from "@/lib/data/public";
 import { dbErrorMessage, type ActionResult } from "@/lib/errors";
+import { storagePublicUrl } from "@/lib/env";
 import { isWhatsAppProviderConfigured } from "@/lib/notifications";
 import { createSessionClient } from "@/lib/supabase/server";
 
@@ -67,7 +68,7 @@ export async function discardDraftAction(): Promise<ActionResult> {
 const MAX_BYTES = 5 * 1024 * 1024;
 const MIME = ["image/jpeg", "image/png", "image/webp", "image/avif"];
 
-export async function uploadPhotoAction(_prev: ActionResult | null, form: FormData): Promise<ActionResult> {
+export async function uploadPhotoAction(_prev: ActionResult | null, form: FormData): Promise<ActionResult<{ path: string; url: string }>> {
   await requireAdmin();
   const file = form.get("file");
   if (!(file instanceof File) || file.size === 0) return { ok: false, error: "Escolha uma foto." };
@@ -101,7 +102,7 @@ export async function uploadPhotoAction(_prev: ActionResult | null, form: FormDa
     return { ok: false, error: dbErrorMessage(error) };
   }
   refreshSite();
-  return { ok: true, message: "Foto enviada para a galeria." };
+  return { ok: true, message: "Foto enviada para a galeria.", data: { path, url: storagePublicUrl(path) } };
 }
 
 export async function updatePhotoAction(id: string, patch: { alt?: string; serviceId?: string | null; featured?: boolean; sort?: number }): Promise<ActionResult> {

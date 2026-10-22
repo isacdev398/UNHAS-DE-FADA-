@@ -10,7 +10,7 @@ import { deletePhotoAction, updatePhotoAction, uploadPhotoAction } from "../acti
 const MAX_SIDE = 1600;
 
 /** Reduz a foto no próprio celular antes de enviar (WebP, até 1600 px): envio rápido e site leve. */
-async function optimize(file: File): Promise<{ blob: Blob; width: number; height: number }> {
+export async function optimize(file: File): Promise<{ blob: Blob; width: number; height: number }> {
   const bitmap = await createImageBitmap(file);
   const scale = Math.min(1, MAX_SIDE / Math.max(bitmap.width, bitmap.height));
   const width = Math.round(bitmap.width * scale);
@@ -31,7 +31,7 @@ async function optimize(file: File): Promise<{ blob: Blob; width: number; height
 }
 
 export function PhotoUploader({ services }: { services: { id: string; name: string }[] }) {
-  const [result, setResult] = useState<ActionResult | null>(null);
+  const [result, setResult] = useState<ActionResult<unknown> | null>(null);
   const [pending, start] = useTransition();
   const formRef = useRef<HTMLFormElement>(null);
 
