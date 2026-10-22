@@ -1,0 +1,199 @@
+@import "tailwindcss";
+
+/*
+ * Design system — Unhas de Fada · "Velvet Atelier"
+ * Rosewood, rosé empoeirado e champagne sobre fundo alabastro (referências do Stitch).
+ * Os nomes antigos dos tokens foram mantidos e apontam para a nova paleta.
+ */
+@theme {
+  /* Superfícies */
+  --color-blush: #fff8f7; /* fundo da página (surface) */
+  --color-surface-low: #fff0ef;
+  --color-nude-soft: #fdeae8; /* surface-container */
+  --color-surface-high: #f7e4e2;
+  --color-shell: #ffffff; /* cartões */
+  --color-champagne: #f7ebe1;
+  --color-nude: #efdcda; /* contornos suaves */
+
+  /* Marca */
+  --color-petal: #feb7ba; /* secondary-container */
+  --color-petal-soft: #ffd9dc; /* primary-fixed */
+  --color-antique: #c28285; /* rosé empoeirado */
+  --color-rose: #9e5a63; /* rosewood */
+  --color-rose-deep: #81424b; /* ação principal */
+  --color-rose-ink: #70343d;
+
+  /* Texto */
+  --color-cocoa: #231918;
+  --color-cocoa-soft: #524344;
+  --color-outline: #857374;
+
+  /* Estados */
+  --color-sage: #1f7a55;
+  --color-sage-soft: #e1f3ea;
+  --color-amber: #8a5a12;
+  --color-amber-soft: #fbefd9;
+  --color-danger: #ba1a1a;
+  --color-danger-soft: #ffdad6;
+
+  --font-display: var(--font-playfair), "Playfair Display", Georgia, serif;
+  --font-sans: var(--font-jakarta), "Plus Jakarta Sans", system-ui, sans-serif;
+
+  --radius-pill: 999px;
+  /* Sombras com tom rosé, nunca cinza neutro */
+  --shadow-soft: 0 8px 24px -4px rgb(74 62 61 / 0.05), 0 2px 6px -1px rgb(158 90 99 / 0.06);
+  --shadow-lift: 0 16px 40px -8px rgb(74 62 61 / 0.1), 0 4px 12px -2px rgb(158 90 99 / 0.1);
+  --shadow-cta: 0 6px 16px -4px rgb(129 66 75 / 0.45);
+
+  --animate-rise: rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  --animate-shimmer: shimmer 7s ease-in-out infinite;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+@keyframes shimmer {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+:root {
+  color-scheme: light;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-blush);
+  color: var(--color-cocoa);
+  font-family: var(--font-sans);
+  -webkit-tap-highlight-color: rgb(158 90 99 / 0.12);
+  text-rendering: optimizeLegibility;
+}
+
+a,
+button,
+input,
+select,
+textarea,
+label {
+  touch-action: manipulation;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-rose-deep);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* fieldset tem min-width: min-content por padrão: listas com rolagem lateral alargariam a página */
+fieldset {
+  min-width: 0;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+/* Inputs a 16px no mobile: evita zoom automático no iPhone */
+input,
+select,
+textarea {
+  font-size: 16px;
+}
+
+select {
+  background-color: var(--color-shell);
+  color: var(--color-cocoa);
+}
+
+/* Texto em rosé gold metálico, como no logo */
+.foil {
+  background-image: linear-gradient(100deg, #94584c 0%, #d6a091 30%, #a8695c 52%, #e7bfb3 72%, #9c5e52 100%);
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .foil-animate {
+    animation: var(--animate-shimmer);
+  }
+}
+
+/* Filete fino com coração, como na assinatura do logo */
+.heart-rule {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--color-antique);
+}
+.heart-rule::before,
+.heart-rule::after {
+  content: "";
+  height: 1px;
+  flex: 1;
+  background: currentColor;
+  opacity: 0.6;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Rótulo pequeno em caixa alta com espaçamento (categorias e seções, como nas referências) */
+.label-caps {
+  font-size: 11px;
+  line-height: 16px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Brilho ambiente rosé atrás de títulos */
+.glow {
+  position: absolute;
+  border-radius: 9999px;
+  pointer-events: none;
+  filter: blur(48px);
+}
+
+.scrollbar-none {
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
