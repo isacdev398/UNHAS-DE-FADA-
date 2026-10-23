@@ -49,7 +49,7 @@ export default async function PrivacyPage() {
           <h2>Seus direitos</h2>
           <p>
             Você pode pedir acesso, correção ou exclusão dos seus dados a qualquer momento pelo WhatsApp{" "}
-            <a href={whatsappUrl(content.whatsapp, waMessages.general)} className="font-medium text-rose-deep underline underline-offset-4">
+            <a href={whatsappUrl(content.whatsapp, waMessages.privacy)} className="font-medium text-rose-deep underline underline-offset-4">
               {formatPhone(content.whatsapp)}
             </a>
             .

@@ -7,7 +7,7 @@
 const SITE = "pelo site da Unhas de Fada";
 
 export const waMessages = {
-  /** Ícone do topo, rodapé, cartão de contato e página de privacidade */
+  /** Ícone do topo, rodapé e cartão de contato */
   general: `Olá! 😊 Vim ${SITE} e gostaria de agendar um horário. Quais dias e horários você tem disponíveis?`,
 
   /** Link de ajuda dentro do agendamento */
@@ -19,6 +19,9 @@ export const waMessages = {
   /** Quando não aparece nenhum horário livre */
   noSlots: (services: string[]) =>
     `Olá! 😊 Tentei agendar ${SITE}${services.length ? ` (${services.join(" + ")})` : ""}, mas não encontrei horário livre. Você consegue um encaixe para mim? Tenho disponibilidade em: `,
+
+  /** Página de privacidade (pedidos sobre dados pessoais) */
+  privacy: `Olá! Gostaria de fazer um pedido sobre os meus dados cadastrados ${SITE} (acesso, correção ou exclusão).`,
 
   /** Página "meu agendamento" */
   appointment: (firstName: string, when: string, services: string) =>
