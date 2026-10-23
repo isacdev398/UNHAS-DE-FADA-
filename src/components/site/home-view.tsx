@@ -9,6 +9,7 @@ import { IconCalendar, IconChevronRight, IconClock, IconInstagram, IconPin, Icon
 import type { SiteContent } from "@/lib/content";
 import type { Catalog, GalleryPhoto, Testimonial } from "@/lib/data/public";
 import { storagePublicUrl } from "@/lib/env";
+import { waMessages } from "@/lib/messages";
 import { formatBRLShort, formatDuration, instagramUrl, whatsappUrl } from "@/lib/format";
 
 type Props = { content: SiteContent; catalog: Catalog; gallery: GalleryPhoto[]; testimonials: Testimonial[]; preview?: boolean };
@@ -19,7 +20,6 @@ export function HomeView({ content, catalog, gallery, testimonials, preview = fa
   const categoryById = new Map(catalog.categories.map((c) => [c.id, c.name]));
   const heroImage = content.heroImagePath ? storagePublicUrl(content.heroImagePath) : "";
   const aboutImage = content.aboutImagePath ? storagePublicUrl(content.aboutImagePath) : "";
-  const waText = "Olá! Vim pelo site e gostaria de agendar um horário.";
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -266,7 +266,7 @@ export function HomeView({ content, catalog, gallery, testimonials, preview = fa
                   </div>
                 </div>
                 <div className="grid gap-2 sm:grid-cols-2">
-                  <a href={whatsappUrl(content.whatsapp, waText)} className={buttonClass("soft", "lg", "w-full")}>
+                  <a href={whatsappUrl(content.whatsapp, waMessages.general)} className={buttonClass("soft", "lg", "w-full")}>
                     <IconWhatsApp size={18} /> WhatsApp direto
                   </a>
                   {content.instagram && (

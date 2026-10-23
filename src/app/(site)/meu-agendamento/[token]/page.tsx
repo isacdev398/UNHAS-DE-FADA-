@@ -12,6 +12,7 @@ import { findByToken } from "@/lib/data/manage";
 import { getPublishedContent } from "@/lib/data/public";
 import { isSupabaseConfigured } from "@/lib/env";
 import { formatBRL, formatDuration, whatsappUrl } from "@/lib/format";
+import { waMessages } from "@/lib/messages";
 import { canClientCancel, canClientReschedule } from "@/lib/policy";
 import { formatDateTime, formatTime } from "@/lib/time";
 import { ManageActions } from "./manage-actions";
@@ -60,7 +61,7 @@ async function ManageContent({
   const reschedule = canClientReschedule(settings, appt.startsAt, now);
   const when = formatDateTime(appt.startsAt, settings.tz);
   const status = STATUS[appt.status];
-  const waText = `Olá! Sou ${appt.clientFirstName}, tenho horário marcado para ${when} (${appt.items.map((i) => i.name).join(" + ")}).`;
+  const waText = waMessages.appointment(appt.clientFirstName, when, appt.items.map((i) => i.name).join(" + "));
 
   return (
     <div className="space-y-6">

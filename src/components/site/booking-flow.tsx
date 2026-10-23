@@ -11,8 +11,9 @@ import { Button, Spinner } from "@/components/ui/button";
 import { Checkbox, Field, Input } from "@/components/ui/form";
 import { IconCalendar, IconCheck, IconChevronLeft, IconClock, IconLock, IconPlus, IconSparkle, IconUsers, IconWhatsApp } from "@/components/ui/icons";
 import type { BookingPolicy, Catalog, CatalogService } from "@/lib/data/public";
-import { formatBRL, formatDuration } from "@/lib/format";
+import { formatBRL, formatDuration, whatsappUrl } from "@/lib/format";
 import { promotionsValidOn, quote } from "@/lib/pricing";
+import { waMessages } from "@/lib/messages";
 import { DEFAULT_TZ, formatDateTime, formatLocalDateShort, todayIn, utcToZoned } from "@/lib/time";
 
 type Step = 1 | 2 | 3;
@@ -329,6 +330,7 @@ export function BookingFlow({
             selected={slot}
             onSelect={setSlot}
             whatsapp={whatsapp}
+            services={selectedServices.map((s) => s.name)}
             initialDate={retryDate}
           />
         </section>
@@ -467,7 +469,7 @@ export function BookingFlow({
       {/* Ajuda */}
       <p className="mt-8 text-center text-[13px] text-cocoa-soft">
         Ficou alguma dúvida?{" "}
-        <a href={`https://wa.me/${whatsapp}`} className="inline-flex items-center gap-1 font-semibold text-rose-deep underline underline-offset-4">
+        <a href={whatsappUrl(whatsapp, waMessages.bookingHelp(selectedServices.map((s) => s.name)))} className="inline-flex items-center gap-1 font-semibold text-rose-deep underline underline-offset-4">
           <IconWhatsApp size={14} /> Fale com a gente
         </a>
       </p>

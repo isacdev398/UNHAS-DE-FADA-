@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { SiteHeader } from "@/components/site/header";
 import { getPublishedContent } from "@/lib/data/public";
+import { waMessages } from "@/lib/messages";
 import { formatPhone, whatsappUrl } from "@/lib/format";
 
 export const metadata: Metadata = {
@@ -48,7 +49,7 @@ export default async function PrivacyPage() {
           <h2>Seus direitos</h2>
           <p>
             Você pode pedir acesso, correção ou exclusão dos seus dados a qualquer momento pelo WhatsApp{" "}
-            <a href={whatsappUrl(content.whatsapp)} className="font-medium text-rose-deep underline underline-offset-4">
+            <a href={whatsappUrl(content.whatsapp, waMessages.privacy)} className="font-medium text-rose-deep underline underline-offset-4">
               {formatPhone(content.whatsapp)}
             </a>
             .

@@ -5,6 +5,7 @@ import { Spinner } from "@/components/ui/button";
 import { useAsync } from "@/components/ui/use-async";
 import { IconWhatsApp } from "@/components/ui/icons";
 import { whatsappUrl } from "@/lib/format";
+import { waMessages } from "@/lib/messages";
 import { formatLocalDateLong, formatMonthShort, formatTime, formatWeekdayShort, utcToZoned } from "@/lib/time";
 
 type Props = {
@@ -14,6 +15,8 @@ type Props = {
   selected: string | null;
   onSelect: (iso: string | null) => void;
   whatsapp: string;
+  /** Nomes dos serviços escolhidos, para a mensagem de encaixe no WhatsApp */
+  services?: string[];
   /** Dia a mostrar primeiro (ex.: o mesmo dia depois de um horário ser ocupado) */
   initialDate?: string | null;
 };
@@ -25,7 +28,7 @@ async function fetchJson(url: string) {
   return body;
 }
 
-export function SlotPicker({ query, tz, selected, onSelect, whatsapp, initialDate = null }: Props) {
+export function SlotPicker({ query, tz, selected, onSelect, whatsapp, services = [], initialDate = null }: Props) {
   const [reload, setReload] = useState(0);
   const [chosenDate, setChosenDate] = useState<string | null>(selected ? utcToZoned(new Date(selected), tz).date : initialDate);
   const dates = useAsync<{ dates: string[] }>(`${query}#${reload}`, () => fetchJson(`/api/disponibilidade?${query}`));
@@ -58,7 +61,7 @@ export function SlotPicker({ query, tz, selected, onSelect, whatsapp, initialDat
       <div className="rounded-2xl bg-surface-low p-6 text-center">
         <p className="font-display text-xl font-semibold text-cocoa">Sem horários livres no momento</p>
         <p className="mt-1 text-sm text-cocoa-soft">Chame a gente no WhatsApp que encontramos um horário para você.</p>
-        <a href={whatsappUrl(whatsapp, "Olá! Não encontrei horário livre no site. Tem algum encaixe?")} className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-xl bg-sage px-5 text-sm font-semibold text-white">
+        <a href={whatsappUrl(whatsapp, waMessages.noSlots(services))} className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-xl bg-sage px-5 text-sm font-semibold text-white">
           <IconWhatsApp /> Falar no WhatsApp
         </a>
       </div>

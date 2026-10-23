@@ -3,6 +3,7 @@ import Link from "next/link";
 import { LinkButton } from "@/components/ui/button";
 import { IconCalendar, IconInstagram, IconWhatsApp } from "@/components/ui/icons";
 import { getPublishedContent } from "@/lib/data/public";
+import { waMessages } from "@/lib/messages";
 import { instagramUrl, whatsappUrl } from "@/lib/format";
 
 /** Cabeçalho fixo translúcido: logo + nome da marca, atalhos de contato e (no computador) o menu. */
@@ -35,7 +36,7 @@ export async function SiteHeader({ showCta = true }: { showCta?: boolean }) {
 
         <div className="flex items-center gap-1">
           <a
-            href={whatsappUrl(content.whatsapp, "Olá! Vim pelo site.")}
+            href={whatsappUrl(content.whatsapp, waMessages.general)}
             aria-label="Conversar no WhatsApp"
             className="flex size-11 items-center justify-center rounded-full text-cocoa-soft transition-colors hover:bg-nude-soft hover:text-rose-deep"
           >

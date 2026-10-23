@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { SiteContent } from "@/lib/content";
+import { waMessages } from "@/lib/messages";
 import { formatPhone, instagramUrl, whatsappUrl } from "@/lib/format";
 
 export function SiteFooter({ content }: { content: SiteContent }) {
@@ -17,7 +18,7 @@ export function SiteFooter({ content }: { content: SiteContent }) {
             </p>
           )}
           <p>
-            <a className="underline-offset-4 hover:underline" href={whatsappUrl(content.whatsapp)}>
+            <a className="underline-offset-4 hover:underline" href={whatsappUrl(content.whatsapp, waMessages.general)}>
               WhatsApp {formatPhone(content.whatsapp)}
             </a>
             {content.instagram && (
