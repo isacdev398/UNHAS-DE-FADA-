@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { IconExternal } from "@/components/ui/icons";
+import { IconExternal, IconLogout } from "@/components/ui/icons";
+import { signOut } from "../(auth)/actions";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import { AdminNav, AdminNavView } from "@/components/admin/nav";
@@ -54,9 +55,19 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
               <span className="label-caps mt-0.5 !text-[9px] text-cocoa-soft">Painel</span>
             </span>
           </Link>
-          <a href="/" target="_blank" rel="noreferrer" className="flex size-10 items-center justify-center rounded-full text-cocoa-soft hover:bg-nude-soft" aria-label="Ver o site">
-            <IconExternal size={19} />
-          </a>
+          <div className="flex items-center gap-1">
+            <a href="/" target="_blank" rel="noreferrer" className="flex size-10 items-center justify-center rounded-full text-cocoa-soft hover:bg-nude-soft" aria-label="Ver o site">
+              <IconExternal size={19} />
+            </a>
+            <form action={signOut}>
+              <button
+                type="submit"
+                className="flex h-10 items-center gap-1.5 rounded-full px-3 text-[13px] font-semibold text-cocoa-soft hover:bg-danger-soft hover:text-danger"
+              >
+                <IconLogout size={18} /> Sair
+              </button>
+            </form>
+          </div>
         </header>
         <main id="conteudo" className="mx-auto w-full max-w-3xl min-w-0 px-4 pb-28 pt-4 sm:px-6 md:pb-12 md:pt-8">
           <Suspense fallback={<Loading />}>

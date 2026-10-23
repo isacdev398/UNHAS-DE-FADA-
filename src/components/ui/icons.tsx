@@ -130,6 +130,11 @@ export const IconChart = (p: IconProps) => (
     <path d="M4 20h16M7 16v-4M11 16V8M15 16v-6M19 16V5" />
   </Svg>
 );
+export const IconLogout = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M14 4.5H18a1.5 1.5 0 0 1 1.5 1.5v12A1.5 1.5 0 0 1 18 19.5h-4M10 16l-4-4 4-4M6 12h9" />
+  </Svg>
+);
 export const IconSettings = (p: IconProps) => (
   <Svg {...p}>
     <circle cx="12" cy="12" r="3" />

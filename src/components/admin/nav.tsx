@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { IconCalendar, IconHome, IconSettings, IconSparkle, IconUsers, IconWallet } from "@/components/ui/icons";
+import { signOut } from "@/app/admin/(auth)/actions";
+import { IconCalendar, IconHome, IconLogout, IconSettings, IconSparkle, IconUsers, IconWallet } from "@/components/ui/icons";
 
 const ITEMS = [
   { href: "/admin", label: "Início", icon: IconHome, exact: true },
@@ -73,6 +74,12 @@ export function AdminNavView({ pathname }: { pathname: string }) {
             );
           })}
         </ul>
+        <form action={signOut} className="mt-auto">
+          <button type="submit" className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 text-sm font-semibold text-cocoa-soft hover:bg-danger-soft hover:text-danger">
+            <IconLogout size={20} />
+            Sair
+          </button>
+        </form>
       </nav>
     </>
   );
