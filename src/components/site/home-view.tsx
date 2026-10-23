@@ -20,6 +20,9 @@ export function HomeView({ content, catalog, gallery, testimonials, preview = fa
   const categoryById = new Map(catalog.categories.map((c) => [c.id, c.name]));
   const heroImage = content.heroImagePath ? storagePublicUrl(content.heroImagePath) : "";
   const aboutImage = content.aboutImagePath ? storagePublicUrl(content.aboutImagePath) : "";
+  // Sem foto de capa, o computador mostra a foto em destaque da galeria (ou a primeira)
+  const heroVisual = heroImage || gallery.find((p) => p.featured)?.url || gallery[0]?.url || "";
+  const minPrice = catalog.services.length ? Math.min(...catalog.services.map((s) => s.priceCents)) : null;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -43,27 +46,29 @@ export function HomeView({ content, catalog, gallery, testimonials, preview = fa
       <SiteHeader />
 
       <main id="conteudo" className="overflow-x-clip">
-        {/* Abertura */}
-        <section className="relative px-5 pb-8 pt-5 md:pb-16 md:pt-12">
+        {/* Abertura: uma coluna no celular, duas no computador (texto + foto) */}
+        <section className="relative px-5 pb-6 pt-4 md:pb-16 md:pt-14">
           <div className="glow -right-16 -top-16 size-72 bg-petal/40" aria-hidden="true" />
           <div className="glow -left-20 top-48 size-60 bg-petal-soft/60" aria-hidden="true" />
-          <div className={`relative mx-auto grid max-w-6xl grid-cols-1 items-center gap-8 ${heroImage ? "md:grid-cols-[1.1fr_1fr]" : "md:max-w-2xl"}`}>
-            <div className="flex min-w-0 flex-col gap-4 motion-safe:animate-rise">
+          <div className="relative mx-auto grid max-w-6xl grid-cols-1 items-center gap-8 md:grid-cols-[1.15fr_1fr] lg:gap-16">
+            <div className="flex min-w-0 flex-col gap-3.5 motion-safe:animate-rise md:gap-5">
               <span className="inline-flex items-center gap-2 self-start rounded-full bg-surface-high px-3.5 py-1.5 text-rose-deep shadow-sm">
                 <IconCalendar size={15} />
                 <span className="label-caps">Agendamento online · sem cadastro</span>
               </span>
-              <div className="space-y-2">
-                <h1 className="font-display text-[34px] leading-[42px] font-semibold tracking-[-0.01em] text-cocoa md:text-5xl md:leading-[56px]">
+              <div className="space-y-2 md:space-y-3">
+                <h1 className="font-display text-[32px] leading-[40px] font-semibold tracking-[-0.01em] text-cocoa md:text-[44px] md:leading-[52px] lg:text-[56px] lg:leading-[64px]">
                   <RichTitle text={content.heroTitle} />
                 </h1>
-                {content.heroSubtitle && <p className="max-w-md text-[15px] leading-relaxed text-cocoa-soft md:text-base">{content.heroSubtitle}</p>}
+                {content.heroSubtitle && (
+                  <p className="max-w-md text-[15px] leading-relaxed text-cocoa-soft md:text-[17px]">{content.heroSubtitle}</p>
+                )}
               </div>
 
               {/* Cartão da marca */}
-              <div className="flex items-center gap-3.5 rounded-2xl bg-shell p-3 shadow-soft">
-                <div className="flex size-20 shrink-0 items-center justify-center rounded-xl bg-nude-soft">
-                  <Image src="/brand/monogram.png" alt="" width={120} height={92} className="h-12 w-auto" />
+              <div className="flex items-center gap-3.5 rounded-2xl bg-shell p-3 shadow-soft md:max-w-md">
+                <div className="flex size-16 shrink-0 items-center justify-center rounded-xl bg-nude-soft md:size-20">
+                  <Image src="/brand/monogram.png" alt="" width={120} height={92} className="h-10 w-auto md:h-12" />
                 </div>
                 <div className="min-w-0">
                   <p translate="no" className="font-display text-lg leading-tight font-semibold text-cocoa">
@@ -71,37 +76,49 @@ export function HomeView({ content, catalog, gallery, testimonials, preview = fa
                   </p>
                   <p className="text-[13px] text-cocoa-soft">Manicure e pedicure com hora marcada</p>
                   {content.address && (
-                    <p className="mt-1.5 flex items-center gap-1 text-xs text-outline">
-                      <IconPin size={14} className="shrink-0 text-rose" />
-                      <span className="truncate">{content.address}</span>
+                    <p className="mt-1 flex items-start gap-1 text-xs leading-snug text-outline">
+                      <IconPin size={14} className="mt-px shrink-0 text-rose" />
+                      <span>{content.address}</span>
                     </p>
                   )}
                 </div>
               </div>
 
-              <div className="flex flex-col gap-2.5 pt-1">
-                <LinkButton href="/agendar" size="lg" className="w-full md:w-auto md:self-start md:px-10">
+              <div className="flex flex-col gap-2.5 pt-1 md:flex-row md:items-center md:gap-4">
+                <LinkButton href="/agendar" size="lg" className="w-full md:w-auto md:px-10">
                   <IconCalendar size={20} /> Agendar horário online
                 </LinkButton>
                 <p className="flex items-center justify-center gap-1.5 text-xs text-cocoa-soft md:justify-start">
-                  <IconClock size={15} className="text-rose-deep" /> Agendamento rápido, em menos de 1 minuto
+                  <IconClock size={15} className="text-rose-deep" /> Rápido, em menos de 1 minuto
                 </p>
               </div>
             </div>
 
-            {heroImage && (
-              <div className="relative mx-auto w-full max-w-sm">
+            {/* Foto: no celular só aparece se houver foto de capa; no computador sempre (foto ou logo) */}
+            <div className={`relative mx-auto w-full max-w-sm md:max-w-md ${heroImage ? "" : "hidden md:block"}`}>
+              <div className="absolute -inset-3 rounded-[2rem] border border-antique/30" aria-hidden="true" />
+              {heroVisual ? (
                 <Image
-                  src={heroImage}
+                  src={heroVisual}
                   alt="Unhas feitas no Unhas de Fada"
                   width={720}
                   height={900}
                   priority
-                  sizes="(max-width: 768px) 90vw, 384px"
-                  className="aspect-[4/5] w-full rounded-3xl object-cover shadow-lift"
+                  sizes="(max-width: 768px) 90vw, 448px"
+                  className="relative aspect-[4/5] w-full rounded-3xl object-cover shadow-lift"
                 />
-              </div>
-            )}
+              ) : (
+                <div className="relative flex aspect-[4/5] w-full items-center justify-center rounded-3xl bg-shell shadow-lift">
+                  <Image src="/brand/logo.png" alt="Unhas de Fada" width={900} height={830} className="h-auto w-3/4" />
+                </div>
+              )}
+              {minPrice !== null && (
+                <div className="absolute -bottom-4 -left-4 rounded-2xl bg-shell px-4 py-3 shadow-lift md:-left-8">
+                  <p className="label-caps text-outline">A partir de</p>
+                  <p className="font-display text-2xl font-bold text-rose-deep tabular">{formatBRLShort(minPrice)}</p>
+                </div>
+              )}
+            </div>
           </div>
         </section>
 
@@ -117,7 +134,7 @@ export function HomeView({ content, catalog, gallery, testimonials, preview = fa
                   Serviços &amp; preços
                 </h2>
               </div>
-              <span className="label-caps shrink-0 rounded-md bg-nude-soft px-2.5 py-1 !text-[10px] text-cocoa-soft">Valores transparentes</span>
+              <span className="label-caps hidden shrink-0 rounded-md bg-nude-soft px-2.5 py-1 !text-[10px] text-cocoa-soft sm:inline">Valores transparentes</span>
             </div>
             <ul className="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
               {catalog.services.map((s) => (
@@ -164,11 +181,11 @@ export function HomeView({ content, catalog, gallery, testimonials, preview = fa
                   Ver mais <IconChevronRight size={16} />
                 </Link>
               </div>
-              <ul className="scrollbar-none mt-3 flex snap-x gap-3 overflow-x-auto px-5 pb-2 pt-1">
+              <ul className="scrollbar-none mt-3 flex snap-x gap-3 overflow-x-auto px-5 pb-2 pt-1 md:grid md:grid-cols-3 md:overflow-visible lg:grid-cols-4">
                 {gallery.slice(0, 10).map((photo, i) => {
                   const service = photo.serviceId ? serviceById.get(photo.serviceId) : undefined;
                   return (
-                    <li key={photo.id} className="w-48 shrink-0 snap-start overflow-hidden rounded-2xl bg-shell shadow-soft md:w-60">
+                    <li key={photo.id} className="w-48 shrink-0 snap-start overflow-hidden rounded-2xl bg-shell shadow-soft md:w-auto">
                       <Link href={service ? `/agendar?servico=${service.slug}` : "/galeria"} className="block">
                         <div className="relative h-56 md:h-72">
                           <Image
@@ -265,7 +282,7 @@ export function HomeView({ content, catalog, gallery, testimonials, preview = fa
                     </Link>
                   </div>
                 </div>
-                <div className="grid gap-2 sm:grid-cols-2">
+                <div className={`grid gap-2 ${content.instagram ? "sm:grid-cols-2" : ""}`}>
                   <a href={whatsappUrl(content.whatsapp, waMessages.general)} className={buttonClass("soft", "lg", "w-full")}>
                     <IconWhatsApp size={18} /> WhatsApp direto
                   </a>

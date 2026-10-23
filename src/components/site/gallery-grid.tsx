@@ -64,10 +64,13 @@ export function GalleryGrid({ photos, services }: { photos: GalleryPhoto[]; serv
                   </div>
                 )}
               </div>
-              <div className="flex items-center justify-between gap-3 p-4">
+              <div className="flex items-start justify-between gap-3 p-4">
                 <div className="min-w-0">
-                  <p className="truncate font-display text-lg font-semibold text-cocoa">{photo.alt || service?.name || "Trabalho realizado"}</p>
-                  {service && <p className="text-[13px] font-semibold text-cocoa-soft tabular">{formatBRL(service.priceCents)}</p>}
+                  <p className="truncate font-display text-lg font-semibold text-cocoa">
+                    {service?.name ?? "Trabalho realizado"}
+                    {service && <span className="ml-2 font-sans text-[13px] font-semibold text-rose-deep tabular">{formatBRL(service.priceCents)}</span>}
+                  </p>
+                  {photo.alt && <p className="mt-0.5 line-clamp-2 text-[13px] leading-snug text-cocoa-soft">{photo.alt}</p>}
                 </div>
                 <Link
                   href={service ? `/agendar?servico=${service.slug}` : "/agendar"}
