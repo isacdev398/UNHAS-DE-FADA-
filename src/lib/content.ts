@@ -33,7 +33,7 @@ export const DEFAULT_CONTENT: SiteContent = {
   aboutTitle: "Sobre o atendimento",
   about:
     "Cada atendimento é feito com calma e atenção aos detalhes, em um espaço pensado para você relaxar enquanto cuida das suas unhas.",
-  whatsapp: "5586994598467",
+  whatsapp: "5586994508467",
   instagram: "",
   address: "Rua Francisco Brito Souza, 5039 – Vila Bandeirante",
   city: "",
