@@ -132,6 +132,37 @@ describe("availability", () => {
     expect(slots).toContain("10:00");
   });
 
+  it("oferece o horário logo após o fim do atendimento anterior (durações variadas)", () => {
+    // Pé de 50 min às 08:00 termina 08:50: a próxima cliente pode começar 08:50, sem esperar 09:00
+    const busy = [{ start: local("2030-01-08", "08:00"), end: local("2030-01-08", "08:50") }];
+    const slots = times(computeDaySlots("2030-01-08", 45, rules, { ...base, busy }, now));
+    expect(slots).toContain("08:50");
+    expect(slots).not.toContain("08:45");
+    expect(slots).toContain("09:00"); // a grade continua disponível
+  });
+
+  it("oferece o horário que termina exatamente quando o próximo atendimento começa", () => {
+    const busy = [{ start: local("2030-01-08", "10:10"), end: local("2030-01-08", "11:00") }];
+    const slots = times(computeDaySlots("2030-01-08", 45, rules, { ...base, busy }, now));
+    expect(slots).toContain("09:25"); // 09:25 + 45 min = 10:10
+    expect(slots).not.toContain("09:30");
+    expect(slots).toContain("11:00");
+  });
+
+  it("encaixa após um bloqueio que termina fora da grade", () => {
+    const blocks = [{ start: local("2030-01-08", "13:30"), end: local("2030-01-08", "14:05") }];
+    const slots = times(computeDaySlots("2030-01-08", 45, rules, { ...base, blocks }, now));
+    expect(slots).toContain("14:05");
+    expect(slots).not.toContain("14:00");
+  });
+
+  it("horário encaixado nunca sai do expediente", () => {
+    // termina 11:40; um serviço de 45 min às 11:40 passaria do meio-dia
+    const busy = [{ start: local("2030-01-08", "11:00"), end: local("2030-01-08", "11:40") }];
+    const slots = times(computeDaySlots("2030-01-08", 45, rules, { ...base, busy }, now));
+    expect(slots).not.toContain("11:40");
+  });
+
   it("aplica intervalo extra entre atendimentos", () => {
     const busy = [{ start: local("2030-01-08", "09:00"), end: local("2030-01-08", "10:00") }];
     const slots = times(computeDaySlots("2030-01-08", 45, { ...rules, bufferMinutes: 15 }, { ...base, busy }, now));

@@ -1,4 +1,4 @@
-import { addDays, diffDays, timeToMinutes, todayIn, weekdayOf, zonedToUtc } from "./time";
+import { addDays, diffDays, timeToMinutes, todayIn, utcToZoned, weekdayOf, zonedToUtc } from "./time";
 
 export type WeeklyHours = { weekday: number; opensAt: string; closesAt: string };
 export type DateException = { onDate: string; opensAt: string; closesAt: string };
@@ -57,9 +57,24 @@ export function computeDaySlots(
     ...state.blocks.map((b) => ({ start: b.start.getTime(), end: b.end.getTime() })),
   ];
 
+  // Como cada serviço tem uma duração, além da grade fixa oferecemos horários
+  // encaixados: logo que um atendimento/bloqueio termina e o horário que termina
+  // exatamente quando o próximo começa. Assim a agenda não fica com "buracos".
+  const fitted: number[] = [];
+  for (const t of taken) {
+    const after = utcToZoned(new Date(t.end), rules.tz);
+    if (after.date === date) fitted.push(after.minutes);
+    const before = utcToZoned(new Date(t.start - (durationMinutes + rules.bufferMinutes) * 60_000), rules.tz);
+    if (before.date === date) fitted.push(before.minutes);
+  }
+
   const slots: Date[] = [];
   for (const range of openRangesFor(date, state)) {
-    for (let m = range.start; m + durationMinutes <= range.end; m += rules.intervalMinutes) {
+    const candidates = new Set<number>();
+    for (let m = range.start; m + durationMinutes <= range.end; m += rules.intervalMinutes) candidates.add(m);
+    for (const m of fitted) if (m >= range.start && m + durationMinutes <= range.end) candidates.add(m);
+
+    for (const m of [...candidates].sort((a, b) => a - b)) {
       const start = zonedToUtc(date, m, rules.tz).getTime();
       const end = start + durationMinutes * 60_000;
       if (start < earliest) continue;
